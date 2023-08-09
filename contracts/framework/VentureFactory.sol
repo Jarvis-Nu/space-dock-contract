@@ -17,9 +17,24 @@ contract SpaceDock is AccessControl {
     /**
      * @dev Struct to store details about each venture.
      */
-    struct Venture {
-        string ipfsHash;
+
+    struct Profiles {
+        string website;
+        string twitter;
+        string github;
+        string blog;
+    }
+
+    struct VentureData {
         string name;
+        string hash;
+        string about;
+        Profiles profiles;
+        address op_multisig;
+    }
+
+    struct Venture {
+        VentureData data;
         address founder;
         uint256 createdAt;
     }
@@ -32,10 +47,8 @@ contract SpaceDock is AccessControl {
     /**
      * @dev Event emitted when a new venture is created.
      * @param ventureId The ID of the venture.
-     * @param ipfsHash The IPFS hash associated with the venture.
-     * @param createdAt The timestamp of when the venture was created.
      */
-    event VentureCreated(uint256 indexed ventureId, string ipfsHash, string name, address indexed founder, uint256 createdAt);
+    event VentureCreated(uint256 indexed ventureId, VentureData data , address indexed founder, uint256 createdAt);
 
     /**
      * @dev Event emitted when the venture base URI is updated.
@@ -60,26 +73,20 @@ contract SpaceDock is AccessControl {
 
     /**
      * @dev Create a new venture.
-     * @param ipfsHash The IPFS hash associated with the venture.
-     * @param name The name of the Venture.
      * @notice The IPFS hash and name cannot be empty strings.
      */
-    function createVenture(string memory ipfsHash, string memory name) public {
-        require(bytes(ipfsHash).length > 0, "IPFS hash cannot be empty");
-        require(bytes(name).length > 0, "Project name cannot be empty");
-
+    function createVenture(VentureData memory data) public {
         _ventureIdCounter.increment();
         uint256 ventureId = _ventureIdCounter.current();
 
         // Save project details
         ventures[ventureId] = Venture({
-            ipfsHash: ipfsHash,
-            name: name,
+            data: data,
             founder: msg.sender,
             createdAt: block.timestamp
         });
 
-        emit VentureCreated(ventureId, ipfsHash, name, msg.sender, block.timestamp);
+        emit VentureCreated(ventureId, data, msg.sender, block.timestamp);
     }
 
     /**
@@ -90,7 +97,7 @@ contract SpaceDock is AccessControl {
      */
     function ventureURI(uint256 ventureId) public view returns (string memory) {
         require(ventureId > 0 && ventureId <= _ventureIdCounter.current(), "Invalid venture ID");
-        return string(abi.encodePacked(_ventureBaseURI, ventures[ventureId].ipfsHash));
+        return string(abi.encodePacked(_ventureBaseURI, ventures[ventureId].data.hash));
     }
 
     /**
