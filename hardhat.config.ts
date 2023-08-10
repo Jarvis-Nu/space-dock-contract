@@ -1,8 +1,17 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+const dotenv = require("dotenv")
+require("@nomicfoundation/hardhat-toolbox");
 
-const config: HardhatUserConfig = {
+dotenv.config()
+
+const config = {
   solidity: "0.8.19",
+  networks: {
+    goerli: {
+      url: "https://goerli.optimism.io",
+      accounts: [process.env.PRIVATE_KEY], // Use your private key here
+      ovm: true,
+    },
+  }
 };
 
-export default config;
+module.exports = config
