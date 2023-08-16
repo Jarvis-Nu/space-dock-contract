@@ -27,7 +27,7 @@ contract SpaceDock is AccessControl {
 
     struct VentureData {
         string name;
-        string hash;
+        string thumbnailUrl;
         string about;
         Profiles profiles;
         address op_multisig;
@@ -73,7 +73,6 @@ contract SpaceDock is AccessControl {
 
     /**
      * @dev Create a new venture.
-     * @notice The IPFS hash and name cannot be empty strings.
      */
     function createVenture(VentureData memory data) public {
         _ventureIdCounter.increment();
@@ -97,7 +96,7 @@ contract SpaceDock is AccessControl {
      */
     function ventureURI(uint256 ventureId) public view returns (string memory) {
         require(ventureId > 0 && ventureId <= _ventureIdCounter.current(), "Invalid venture ID");
-        return string(abi.encodePacked(_ventureBaseURI, ventures[ventureId].data.hash));
+        return string(abi.encodePacked(_ventureBaseURI, ventures[ventureId].data.thumbnailUrl));
     }
 
     /**
