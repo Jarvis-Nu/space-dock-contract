@@ -28,6 +28,7 @@ contract SpaceDock is AccessControl {
     struct VentureData {
         string name;
         string thumbnailUrl;
+        string coverUrl;
         string about;
         Profiles profiles;
         address op_multisig;
